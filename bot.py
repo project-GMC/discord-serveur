@@ -15,4 +15,3 @@ async def on_message(message):
         await message.channel.send('Hello !')
 
 client.run(os.environ['TOKEN_DISCORD'])
-#client.run('OTA0Mzk2MDUzODQ2MDM2NTUw.YX66dg.T1xQBhgmZM99QtGATTFZxMRVHX8')
