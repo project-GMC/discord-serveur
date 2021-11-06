@@ -23,7 +23,6 @@ jobs:
         run: |
             DOCKER_USER=raniakh
             docker pull $DOCKER_USER/discord_bot_quotes:latest
-            docker tag $DOCKER_USER/discord_bot_quotes:latest discord_bot_quotes:latest
             docker build -t discord_bot_quotes .
       - name: "Test containerized app"
         env:
