@@ -23,4 +23,5 @@ jobs:
           docker run -d --name bot -e DISCORD_TOKEN=${DISCORD_TOKEN} discord_bot_quotes:latest
           sleep 5
           docker ps --all
+          curl localhost:40044
           docker logs bot
