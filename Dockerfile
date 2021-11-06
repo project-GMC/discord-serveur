@@ -1,4 +1,4 @@
-FROM python:3
+FROM discord_bot_quotes_base:latest
 
 COPY . .
 
