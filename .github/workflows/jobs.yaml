@@ -23,7 +23,7 @@ jobs:
         run: |
             DOCKER_USER=raniakh
             docker pull $DOCKER_USER/discord_bot_quotes:latest
-            docker build -t discord_bot_quotes .
+            docker build -t discord_bot_quotes:latest -f Dockerfile src/
       - name: "Test containerized app"
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }} 
