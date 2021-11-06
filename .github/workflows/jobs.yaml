@@ -15,13 +15,12 @@ jobs:
             docker push $DOCKER_USER/discord_bot_quotes:latest 
             docker logout 
       - name: "Build and containerize app"
-        env:
-          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
             DOCKER_USER=raniakh
             docker pull $DOCKER_USER/discord_bot_quotes:latest 
+            docker tag $DOCKER_USER/discord_bot_quotes:latest discord_bot_quotes:latest 
             docker build -t $DOCKER_USER/discord_bot_quotes:latest -f Dockerfile src/
-            docker tag $DOCKER_USER/discord_bot_quotes:latest discord_bot_quotes:latest    
+   
       - name: "Test containerized app"
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }} 
@@ -30,4 +29,3 @@ jobs:
           sleep 5
           docker ps --all
           docker logs bot
-          curl localhost:40044
