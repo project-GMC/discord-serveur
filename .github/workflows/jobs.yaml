@@ -5,16 +5,22 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
-      
-      - name: "Build and containerize app"
+      - name: "Build base image"
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
             DOCKER_USER=raniakh
             docker login -u $DOCKER_USER -p $DOCKER_TOKEN
-            docker build -t $DOCKER_USER/discord_bot_quotes:latest -f Dockerfile src/
+            docker build -t $DOCKER_USER/discord_bot_quotes:latest -f base.Dockerfile src/
             docker push $DOCKER_USER/discord_bot_quotes:latest 
             docker logout 
+      - name: "Build and containerize app"
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+        run: |
+            DOCKER_USER=raniakh
+            docker pull $DOCKER_USER/discord_bot_quotes:latest 
+            docker build -t $DOCKER_USER/discord_bot_quotes:latest -f Dockerfile src/
             docker tag $DOCKER_USER/discord_bot_quotes:latest discord_bot_quotes:latest    
       - name: "Test containerized app"
         env:
@@ -23,5 +29,5 @@ jobs:
           docker run -d --name bot -e DISCORD_TOKEN=${DISCORD_TOKEN} discord_bot_quotes:latest
           sleep 5
           docker ps --all
-          curl localhost:40044
           docker logs bot
+          curl localhost:40044
