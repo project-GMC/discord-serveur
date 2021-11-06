@@ -6,30 +6,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: "Build base image"
+      - name: "Build and containerize app"
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
         run: |
             DOCKER_USER=raniakh
             docker login -u $DOCKER_USER -p $DOCKER_TOKEN
             docker build -t $DOCKER_USER/discord_bot_quotes:latest -f Dockerfile src/
             docker push $DOCKER_USER/discord_bot_quotes:latest 
-            docker logout        
-      - name: "Build and containerize app"
-        env:
-          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }} 
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }} 
-        run: |
-            DOCKER_USER=raniakh
-            docker pull $DOCKER_USER/discord_bot_quotes:latest
-            docker build -t discord_bot_quotes:latest -f Dockerfile src/
+            docker logout 
+            docker tag $DOCKER_USER/discord_bot_quotes:latest discord_bot_quotes:latest    
       - name: "Test containerized app"
         env:
-          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }} 
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }} 
         run: |
           docker run -d --name bot -e DISCORD_TOKEN=${DISCORD_TOKEN} discord_bot_quotes:latest
+          sleep 5
           docker ps --all
           docker logs bot
-          docker start bot
