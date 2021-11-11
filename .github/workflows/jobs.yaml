@@ -11,10 +11,9 @@ jobs:
         run: |
             DOCKER_USER=raniakh
             BOT_TAG=$(sha256sum package.json | cut -c1-15 )
-            RES=$(curl -u raniakh:$DOCKER_TOKEN https://registry.hub.docker.com/v2/repositories/$DOCKER_USER/discord_bot_quotes_base/tags | { grep $BOT_TAG || true; } )
+            RES=$(curl -u $DOCKER_USER:$DOCKER_TOKEN https://registry.hub.docker.com/v2/repositories/$DOCKER_USER/discord_bot_quotes_base/tags | { grep $BOT_TAG || true; } )
             if [ -z "$RES" ]; then
               echo "No image with this tag $BOT_TAG"
-              DOCKER_USER=raniakh
               docker login -u $DOCKER_USER -p $DOCKER_TOKEN
               docker build -t $DOCKER_USER/discord_bot_quotes_base:latest -f base.Dockerfile .
               docker push $DOCKER_USER/discord_bot_quotes_base:latest 
