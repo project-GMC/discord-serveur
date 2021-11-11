@@ -38,3 +38,15 @@ jobs:
           docker ps --all
           curl localhost:40044 | grep 'is alive'
           docker logs bot
+      - name: "Push containerized app"
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN}}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          DOCKER_USER=raniakh
+          docker login -u $DOCKER_USER -p $DOCKER_TOKEN
+          docker tag discord_bot_quotes $DOCKER_USER/discord_bot_quotes:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_USER/discord_bot_quotes:$GITHUB_RUN_NUMBER
+          docker tag $DOCKER_USER/discord_bot_quotes:$GITHUB_RUN_NUMBER $DOCKER_USER/discord_bot_quotes:latest
+          docker push $DOCKER_USER/discord_bot_quotes:latest
+          docker logout
