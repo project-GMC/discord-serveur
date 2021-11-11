@@ -10,10 +10,18 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
             DOCKER_USER=raniakh
-            docker login -u $DOCKER_USER -p $DOCKER_TOKEN
-            docker build -t $DOCKER_USER/discord_bot_quotes_base:latest -f base.Dockerfile .
-            docker push $DOCKER_USER/discord_bot_quotes_base:latest 
-            docker logout 
+            BOT_TAG=$(sha256sum package.json | cut -c1-15 )
+            RES=$(curl -u raniakh:$DOCKER_TOKEN https://registry.hub.docker.com/v2/repositories/$DOCKER_USER/discord_bot_quotes_base/tags | { grep $BOT_TAG || true; } )
+            if [ -z "$RES" ]; then
+              echo "No image with this tag $BOT_TAG"
+              DOCKER_USER=raniakh
+              docker login -u $DOCKER_USER -p $DOCKER_TOKEN
+              docker build -t $DOCKER_USER/discord_bot_quotes_base:latest -f base.Dockerfile .
+              docker push $DOCKER_USER/discord_bot_quotes_base:latest 
+              docker logout 
+            else
+              echo "Found image with tag $BOT_TAG"
+            fi  
       - name: "Build and containerize app"
         run: |
             DOCKER_USER=raniakh
@@ -28,5 +36,5 @@ jobs:
           docker run -d -p 40044:40044 --name bot -e DISCORD_TOKEN=${DISCORD_TOKEN} discord_bot_quotes:latest
           sleep 5
           docker ps --all
-          curl localhost:40044
+          curl localhost:40044 | grep 'is alive'
           docker logs bot
