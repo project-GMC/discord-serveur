@@ -10,7 +10,7 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
             DOCKER_USER=raniakh
-            BOT_TAG=$(sha256sum package.json | cut -c1-15 )
+            BOT_TAG=$(sha256sum requirements.txt | cut -c1-15 )
             RES=$(curl -u $DOCKER_USER:$DOCKER_TOKEN https://registry.hub.docker.com/v2/repositories/$DOCKER_USER/discord_bot_quotes_base/tags | { grep $BOT_TAG || true; } )
             if [ -z "$RES" ]; then
               echo "No image with this tag $BOT_TAG"
