@@ -61,6 +61,7 @@ jobs:
         run: |
           kubectl delete secret discord-secret || true
           kubectl create secret generic discord-secret --from-literal='token=$DISCORD_TOKEN'
+      - name: "Deploy"    
         run: |
           cat << EOF | tee /home/vagrant/.terraform.d/credentials.tfrc.json > /dev/null
           {
