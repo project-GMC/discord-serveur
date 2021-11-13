@@ -49,3 +49,19 @@ jobs:
           docker tag $DOCKER_USER/discord_bot_quotes:$GITHUB_RUN_NUMBER $DOCKER_USER/discord_bot_quotes:latest
           docker push $DOCKER_USER/discord_bot_quotes:latest
           docker logout
+  CD:
+    needs: [CI]
+    runs-on: [kubernetes]
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Add Discord Secret"
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }} 
+        run: |
+          kubectl delete secret discord-secret || true
+          kubectl create secret generic discord-secret --from-literal='token=$DISCORD_TOKEN'
+      - name: "Deploy Discord Bot"
+        run: |
+          kubectl apply -f deploy.yaml      
+
+                 
