@@ -15,18 +15,18 @@ jobs:
             if [ -z "$RES" ]; then
               echo "No image with this tag $BOT_TAG"
               docker login -u $DOCKER_USER -p $DOCKER_TOKEN
-              docker build -t $DOCKER_USER/discord_bot_quotes_base:latest -f base.Dockerfile .
+              docker build -t $DOCKER_USER/discord_bot_quotes_base:$BOT_TAG -f base.Dockerfile .
+              docker push $DOCKER_USER/discord_bot_quotes_base:$BOT_TAG 
+              docker tag $DOCKER_USER/discord_bot_quotes_base:$BOT_TAG $DOCKER_USER/discord_bot_quotes_base:latest 
               docker push $DOCKER_USER/discord_bot_quotes_base:latest 
               docker logout 
             else
               echo "Found image with tag $BOT_TAG"
             fi  
-      - name: "Build and containerize app"
-        run: |
-            DOCKER_USER=raniakh
             docker pull $DOCKER_USER/discord_bot_quotes_base:latest 
             docker tag $DOCKER_USER/discord_bot_quotes_base:latest discord_bot_quotes_base:latest 
-            docker build -t discord_bot_quotes:latest -f Dockerfile src/
+      - name: "Build and containerize app"
+        run: docker build -t discord_bot_quotes:latest -f Dockerfile src/
    
       - name: "Test containerized app"
         env:
