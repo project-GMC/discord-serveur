@@ -61,9 +61,24 @@ jobs:
         run: |
           kubectl delete secret discord-secret || true
           kubectl create secret generic discord-secret --from-literal='token=$DISCORD_TOKEN'
-      - name: "Deploy Discord Bot"
         run: |
+          cat << EOF | tee /home/vagrant/.terraform.d/credentials.tfrc.json > /dev/null
+          {
+            "credentials": {
+              "app.terraform.io": {
+                "token": "$TERRAFORM_TOKEN"
+              }
+            }
+          }
+          EOF
           terraform init
-          terraform apply      
+          
+      - name: "Terraform plan"
+        run: |
+          terraform plan
+          
+      - name: "Terraform apply"
+        run: |
+          terraform apply -auto-approve      
 
                  
